@@ -204,3 +204,9 @@ printer→server command — it only advances the next `push_status`.
 Practical consequence for a reimplementation: to make the panel show Collected/Reprint/Cancel,
 start the job with the **exact managed `project_file` above** and let the printer reach
 `FINISH`. Do not expect (or need) a server-sent "collected" trigger.
+
+**Confirmed by reimplementation:** a server emitting this minimal `project_file` (same field
+names, no extra fields) and letting the printer reach `FINISH` reproduces the on-printer
+Collected/Reprint/Cancel screen; a bloated/renamed `project_file` (extra `print_type`,
+calibration flags under different names, etc.) starts the job as a plain print and the screen
+does not appear. The managed-task shape is the trigger.
