@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+*.dmp
+*.pcap
+*.pcapng
+*.etl
+keylog*.txt
+*.key
+.claude-flow/
+.claude/
