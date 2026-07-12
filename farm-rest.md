@@ -2,7 +2,7 @@
 
 The server exposes a TLS REST API on `8888` (Go, `go-zero` framework). Two clients use it:
 
-- the **Farm Manager client** (Electron, UA `BambuFarmManagerClient/2.3.0 … Electron/33.2.1`)
+- the **Farm Manager client** (Electron; observed 2.3.0 and 2.4.0 builds)
   — control + heavy polling, from the LAN IP and from `127.0.0.1`;
 - the **printer** (UA `ESP32 HTTP Client/1.0`) — file download + liveview upload, using the
   `apix_v` base it received during bind.
@@ -38,7 +38,7 @@ HTTP and TLS on `8888` (protocol-sniff the first bytes, or run both and route by
 | `GET /captain` | Client heartbeat / session keepalive (frequent, heavy). |
 | `GET /devices2?use_lite=true` | List bound devices (lite view). |
 | `GET /device/{serial}` | One device's full state. |
-| `POST /device/sync` | Push/refresh device state. |
+| `POST /device/sync` | Printer state refresh and Farm-screen task-card pull. |
 | `POST /device/bulkopt` | Bulk operation across devices. |
 | `PUT /device/{serial}/name` | Rename a device. |
 
@@ -47,12 +47,19 @@ HTTP and TLS on `8888` (protocol-sniff the first bytes, or run both and route by
 | Method & path | Purpose |
 |---------------|---------|
 | `GET /task` | List tasks. |
+| `POST /task` | Create a task from the desktop client; this updates server state but does not itself send a print command. |
+| `POST /device/sync` | Printer-side Farm screen pulls its task cards with `cmd: "task_list"`. |
+| `POST /device/launchtask` | Printer-side Start button sends `cmd: "sub_start"`; the server ACKs first and publishes `project_file` afterwards. |
 | `POST /device/{serial}/opt` | Client→printer bridge: an `opt` request is forwarded as the matching MQTT command (e.g. the `project_file` in [farm-mqtt.md](./farm-mqtt.md)). |
-| `POST /device/{serial}/launchtask` | Start a task on a device. |
+| `POST /device/{serial}/launchtask` | Desktop/client-directed start route for a specific device; distinct from the printer-side unscoped route above. |
 | `POST /task/{id}/launchprinter` | Assign/launch a task to a printer. |
 
 The `/opt` request body is effectively the decrypted MQTT command — the REST layer is a thin
 bridge to `device/<sn>/request`.
+
+The printer-side queue is a two-channel protocol: REST supplies the cards and acknowledges the
+panel action, then MQTT starts the selected copy. The exact request/response shapes, four
+independent identifiers, and per-copy lifecycle are in [farm-tasks.md](./farm-tasks.md).
 
 ## Files & liveview
 

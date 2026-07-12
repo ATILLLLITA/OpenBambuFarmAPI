@@ -8,7 +8,9 @@ This is a companion to [Doridian/OpenBambuAPI](https://github.com/Doridian/OpenB
 which documents the cloud/LAN *single-printer* MQTT/HTTP/FTP protocol. That project does
 **not** cover farm mode. This one documents the farm-specific layer: the TCP-3002 bind
 handshake, the farm TLS trust chain, the farm MQTT broker, the REST control API, the
-command-security signature layer that secured printers require, and the end-of-print behaviour — all recovered by observing a real server talking to a real printer.
+command-security signature layer that secured printers require, the printer-side task queue,
+and the end-of-print behaviour — all recovered by observing a real server talking to a real
+printer.
 
 > **Disclaimer.** Independent interoperability research. Not affiliated with, authorized by,
 > or endorsed by Bambu Lab. Contains **no** Bambu source code, binaries, decompilation, or
@@ -17,11 +19,11 @@ command-security signature layer that secured printers require, and the end-of-p
 
 ## Scope & method
 
-All findings come from passively capturing and decrypting traffic between **one** server and
-**one** printer (model C12, firmware `01.06.30.01`) on a private LAN, then cross-checking the
-decrypted JSON against the independently-written OpenBambuAPI and against the server's own
-decompiled symbols. Where a fact is inferred rather than directly observed it is marked
-*(inferred)*.
+Findings come from controlled captures of official Farm Manager 2.x sessions between
+**one** server and **one** printer (model C12, firmware `01.06.30.01`) on a private LAN, then
+cross-checking the decrypted JSON against the independently-written OpenBambuAPI and against
+the server's own decompiled symbols. Where a fact is inferred rather than directly observed
+it is marked *(inferred)*.
 
 Secret values (private keys, the shared broker password, TLS session secrets, device certs)
 are **redacted** throughout and shown only as `«REDACTED»` placeholders.
@@ -72,6 +74,7 @@ endpoints.
 | [farm-tls.md](./farm-tls.md) | TLS versions, ciphers, the farm certificate chain, why decryption needs the session secret |
 | [farm-mqtt.md](./farm-mqtt.md) | Broker auth, `device/<sn>/{request,report}`, `project_file`, `push_status`, print lifecycle, the Collected/Reprint/Cancel trigger |
 | [farm-rest.md](./farm-rest.md) | The `:8888` REST surface used by the client and printer |
+| [farm-tasks.md](./farm-tasks.md) | Printer task cards, `sub_start`, per-copy subtasks, ID relationships, and launch ordering |
 | [farm-command-security.md](./farm-command-security.md) | MQTT-Sec: the per-command signature layer that **secured** printers require |
 
 ## License
