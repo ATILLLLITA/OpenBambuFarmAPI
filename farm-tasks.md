@@ -143,7 +143,18 @@ accepted panel start must reserve an unused subtask copy. Advertising a task wit
 or losing it between the list and start requests, causes the printer to report that the task
 count ran out or the task was removed.
 
-## 5. Reimplementation checklist
+## 5. Reimplementation result
+
+A supervised clean-room implementation reproduced the complete exchange on a controlled
+printer: the panel displayed the task, accepted Start, downloaded and extracted the full 3MF,
+printed to 100%, and produced terminal per-copy accounting with real start/end/leave times.
+The task ended with zero remaining copies and one finished copy.
+
+No `bed_clean` preceded `project_file`. A separately configured AutoEject workflow sent
+`bed_clean` only after `FINISH` as its Collected action and returned the printer to `IDLE`.
+That automation is optional post-finish behavior, not part of the task-pull launch contract.
+
+## 6. Reimplementation checklist
 
 - Authenticate the printer identity from its TLS client certificate and/or device header.
 - Return only tasks targeted at that bound printer and backed by an available 3MF.
