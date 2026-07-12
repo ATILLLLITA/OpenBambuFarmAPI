@@ -34,6 +34,7 @@ HTTP and TLS on `8888` (protocol-sniff the first bytes, or run both and route by
 |---------------|---------|
 | `PUT /bind2` | Bind a printer — triggers the server's TCP-3002 `login` ([farm-bind.md](./farm-bind.md)). ~40 s timeout. |
 | `DELETE /bind` | Unbind. Body `{ "dev_ids": [ "<serial>" ] }` → server publishes `bind.unbind` over MQTT. |
+| `PUT /device/{serial}/unbind` | Unbind alias for a single device — same lifecycle as `DELETE /bind`; response carries `unbind_results`. |
 | `GET /captain` | Client heartbeat / session keepalive (frequent, heavy). |
 | `GET /devices2?use_lite=true` | List bound devices (lite view). |
 | `GET /device/{serial}` | One device's full state. |

@@ -59,7 +59,9 @@ Inside the `1883` TLS tunnel, the MQTT `CONNECT` carries:
 
 Because this printer has **no MQTT-Sec** layer (it reports `device insecure`), the MQTT
 payloads inside TLS are **plaintext JSON** — once the TLS is decrypted there is no second
-encryption layer (see [farm-mqtt.md](./farm-mqtt.md)).
+encryption layer (see [farm-mqtt.md](./farm-mqtt.md)). **Secured** printers (state
+`sec: "secure"`) add a per-command signature layer on top of that plaintext — see
+[farm-command-security.md](./farm-command-security.md).
 
 ## Why decryption needs the session secret (not just a key)
 

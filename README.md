@@ -7,8 +7,8 @@ printers) and Bambu Lab 3D printers.
 This is a companion to [Doridian/OpenBambuAPI](https://github.com/Doridian/OpenBambuAPI),
 which documents the cloud/LAN *single-printer* MQTT/HTTP/FTP protocol. That project does
 **not** cover farm mode. This one documents the farm-specific layer: the TCP-3002 bind
-handshake, the farm TLS trust chain, the farm MQTT broker, the REST control API, and the
-end-of-print behaviour — all recovered by observing a real server talking to a real printer.
+handshake, the farm TLS trust chain, the farm MQTT broker, the REST control API, the
+command-security signature layer that secured printers require, and the end-of-print behaviour — all recovered by observing a real server talking to a real printer.
 
 > **Disclaimer.** Independent interoperability research. Not affiliated with, authorized by,
 > or endorsed by Bambu Lab. Contains **no** Bambu source code, binaries, decompilation, or
@@ -72,6 +72,7 @@ endpoints.
 | [farm-tls.md](./farm-tls.md) | TLS versions, ciphers, the farm certificate chain, why decryption needs the session secret |
 | [farm-mqtt.md](./farm-mqtt.md) | Broker auth, `device/<sn>/{request,report}`, `project_file`, `push_status`, print lifecycle, the Collected/Reprint/Cancel trigger |
 | [farm-rest.md](./farm-rest.md) | The `:8888` REST surface used by the client and printer |
+| [farm-command-security.md](./farm-command-security.md) | MQTT-Sec: the per-command signature layer that **secured** printers require |
 
 ## License
 
