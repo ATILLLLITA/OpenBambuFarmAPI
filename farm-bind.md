@@ -90,3 +90,51 @@ then drops its MQTT connection.
 |--------|-----------|---------|
 | **bind** | server → printer | TCP 3002 `login`/`detect` |
 | **unbind** | server → printer | MQTT `device/<sn>/request` `bind.unbind` |
+
+## 4. Unbind alias & result
+
+The client can also unbind a single device with **`PUT /device/{serial}/unbind`** on `:8888` —
+same lifecycle as `DELETE /bind`, with the response carrying an **`unbind_results`** field. Both
+routes end in the same `bind.unbind` MQTT publish to the printer.
+
+## 5. Persisted bind record (server-side state model)
+
+After a successful bind the server persists a per-printer record (key family
+`binddb.bindprinters.<serial>`). Its shape — and the values that separate an unbound *cloud/free*
+printer from a *farm-bound* one — is what a clone must reproduce for the official client to
+render the device correctly:
+
+```json
+{
+  "device": {
+    "location":  "…",
+    "usn":       "<serial>",
+    "model":     "<model code>",
+    "name":      "…",
+    "signal":    "…",
+    "connect":   "FARM",
+    "bind":      "LAN-FARM",
+    "sec":       "",
+    "version":   "<firmware>",
+    "farm":      false,
+    "server_id": "«REDACTED — the farm server's id»",
+    "server_ip": "<server ip>"
+  },
+  "tags": null,
+  "is_up_cloud": false
+}
+```
+
+| Field | Unbound (cloud/free) | Farm-bound (this record) |
+|-------|----------------------|--------------------------|
+| `connect` | `cloud` | `FARM` |
+| `bind` | `free` | `LAN-FARM` |
+| `farm` | `true` | `false` |
+| `is_up_cloud` | `true` | `false` |
+| `sec` | `secure` / `""` | unchanged — `secure` for a secured model, else `""` |
+
+## 6. Secured printers
+
+If the printer is a **secured** model (it reports `sec: "secure"`), the `bind.unbind` publish —
+like every server → printer command — must be **signed**, or the printer answers `84033543` and
+stays bound to its current `server_id`. See [farm-command-security.md](./farm-command-security.md).
