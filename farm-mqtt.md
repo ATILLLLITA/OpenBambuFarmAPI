@@ -21,7 +21,7 @@ Across a full **unattended** bind → print → finish session (no operator inte
 
 | Namespace.command | Purpose | Frequency |
 |-------------------|---------|-----------|
-| `print.project_file` | start a print | once per job |
+| `print.project_file` | start a print, including one selected from the printer's Farm screen | once per job |
 | `system.sntp` | time sync | periodic |
 | `info.get_version` | module/firmware versions | occasional |
 | `bind.unbind` | unbind (see [farm-bind.md](./farm-bind.md)) | on unbind |
@@ -31,6 +31,24 @@ Crucially, the server sends **nothing at the end of the print** — no `stop`/`f
 *Print lifecycle* below). Operator actions add on-demand controls on top of this baseline —
 see *Device control commands* below (those include `stop`, `pause`, `bed_clean`, etc., but only
 when a human clicks them).
+
+### Printer-screen queue launch ordering
+
+For a job selected on the printer's own Farm screen, the REST ACK and MQTT start are separate
+steps. The observed order is:
+
+```text
+POST /device/launchtask {"cmd":"sub_start", ...}
+<- {"cmd":"sub_start","err_code":0}
+... about 1.26 seconds ...
+MQTT print.project_file
+GET /file/f3mf/<f3mf-id>/f3mffile
+```
+
+The ACK alone does not start anything. A clone that returns success but omits the later MQTT
+publish leaves the panel at `Waiting to print`. This printer-screen path did **not** include an
+extra `bed_clean` command. See [farm-tasks.md](./farm-tasks.md) for the REST task list, ID
+relationships, and per-copy state.
 
 ## `print.project_file` — start a print
 
