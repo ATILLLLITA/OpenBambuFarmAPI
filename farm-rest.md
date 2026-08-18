@@ -8,7 +8,9 @@ The server exposes a TLS REST API on `8888` (Go, `go-zero` framework). Two clien
   `apix_v` base it received during bind.
 
 Endpoints below are those **observed in use** (from request logs / decrypted traffic); the
-surface is larger. Request bodies are JSON unless noted.
+surface is larger — see [farm-rest-reference.md](./farm-rest-reference.md) for the complete
+109-route method/path map, and [farm-errors.md](./farm-errors.md) for the error codes these
+routes return. Request bodies are JSON unless noted.
 
 ## ⚠️ Port 8888 is dual-protocol (HTTP **and** HTTPS) — critical for reimplementation
 
